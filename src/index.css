@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+/* ============================================= */
+/* ItemIsta Admin — Custom Theme                  */
+/* Same color palette as the main site            */
+/* ============================================= */
+
+@theme {
+  --color-primary: #646cff;
+  --color-primary-hover: #535bf2;
+  --color-primary-light: #747bff;
+  --color-secondary: #1a1a1a;
+  --color-background: #f5f5f5;
+  --color-surface: #ffffff;
+  --color-text-primary: #213547;
+  --color-text-secondary: #555;
+  --color-text-muted: #888;
+  --color-border: #e0e0e0;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
+
+  --font-sans: system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+/* Bell ring animation */
+@keyframes bell-ring {
+  0%   { transform: rotate(0deg); }
+  10%  { transform: rotate(18deg); }
+  20%  { transform: rotate(-16deg); }
+  30%  { transform: rotate(14deg); }
+  40%  { transform: rotate(-12deg); }
+  50%  { transform: rotate(10deg); }
+  60%  { transform: rotate(-8deg); }
+  70%  { transform: rotate(6deg); }
+  80%  { transform: rotate(-4deg); }
+  90%  { transform: rotate(2deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.bell-ring {
+  animation: bell-ring 0.8s ease-in-out;
+  transform-origin: top center;
+  display: inline-block;
+}
+
+/* Base */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
+}
