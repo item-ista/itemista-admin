@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Store, Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { toast } from 'react-toastify'
 
 export default function Login() {
@@ -36,9 +36,7 @@ export default function Login() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4">
-            <Store size={32} className="text-white" />
-          </div>
+          <img src="/ItemIstaPink.png" alt="ItemIsta" className="w-20 h-20 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-text-primary">ItemIsta Admin</h1>
           <p className="text-text-muted text-sm mt-1">Sign in to your admin dashboard</p>
         </div>

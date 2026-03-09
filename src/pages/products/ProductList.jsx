@@ -80,7 +80,7 @@ export default function ProductList() {
         </div>
         <Link
           to="/products/add"
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-hover transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2.5 bg-success text-white text-sm font-medium rounded-lg hover:opacity-90 transition-colors"
         >
           <Plus size={18} />
           Add Product
@@ -201,7 +201,7 @@ export default function ProductList() {
                       <div className="flex items-center justify-end gap-1">
                         <Link
                           to={`/products/edit/${product.id}`}
-                          className="p-1.5 rounded-lg hover:bg-blue-50 text-text-muted hover:text-info transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-yellow-50 text-text-muted hover:text-warning transition-colors"
                           title="Edit"
                         >
                           <Edit size={16} />

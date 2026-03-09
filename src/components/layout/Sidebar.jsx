@@ -7,7 +7,6 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  Store,
   Star,
 } from 'lucide-react'
 import { useOrderNotifications } from '../../context/OrderNotificationContext'
@@ -33,9 +32,7 @@ export default function Sidebar({ collapsed, onToggle }) {
     >
       {/* Logo / Brand */}
       <div className="flex items-center gap-3 px-4 h-16 border-b border-white/10">
-        <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
-          <Store size={20} className="text-white" />
-        </div>
+        <img src="/ItemIstaWhite.png" alt="ItemIsta" className="w-9 h-9 flex-shrink-0" />
         {!collapsed && (
           <div className="overflow-hidden">
             <h1 className="text-base font-bold leading-tight">ItemIsta</h1>

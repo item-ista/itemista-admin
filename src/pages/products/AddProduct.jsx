@@ -27,6 +27,7 @@ export default function AddProduct() {
     is_flash_sale: false,
     flash_sale_end_time: '',
     discount_percentage: '',
+    is_just_for_you: false,
   })
 
   useEffect(() => {
@@ -364,11 +365,26 @@ export default function AddProduct() {
             )}
           </div>
 
+          {/* Just For You */}
+          <div className="bg-surface rounded-xl border border-border p-5 space-y-4">
+            <h2 className="text-base font-semibold text-text-primary">Just For You</h2>
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="is_just_for_you"
+                checked={form.is_just_for_you}
+                onChange={handleChange}
+                className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+              />
+              <span className="text-sm text-text-primary">Show in Just For You</span>
+            </label>
+          </div>
+
           {/* Submit */}
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-3 rounded-lg bg-primary text-white font-medium hover:bg-primary-hover disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            className="w-full py-3 rounded-lg bg-success text-white font-medium hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
           >
             {submitting ? 'Creating...' : 'Create Product'}
           </button>

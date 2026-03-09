@@ -129,7 +129,7 @@ export default function OrderList() {
                     <td className="py-3 px-4 text-right">
                       <Link
                         to={`/orders/${order.id}`}
-                        className="inline-flex items-center gap-1 text-xs text-primary hover:text-primary-hover font-medium transition-colors"
+                        className="inline-flex items-center gap-1 text-xs text-info hover:opacity-80 font-medium transition-colors"
                       >
                         <Eye size={14} />
                         View

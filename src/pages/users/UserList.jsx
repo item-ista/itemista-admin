@@ -138,7 +138,7 @@ export default function UserList() {
                       <td className="py-3 px-4 text-right">
                         <button
                           onClick={() => setSelectedUser(user)}
-                          className="text-xs text-primary hover:text-primary-hover font-medium transition-colors"
+                          className="text-xs text-info hover:opacity-80 font-medium transition-colors"
                         >
                           View Details
                         </button>

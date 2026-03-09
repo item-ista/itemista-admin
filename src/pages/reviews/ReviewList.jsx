@@ -252,7 +252,7 @@ export default function ReviewList() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => handleSaveEdit(review.id)}
-                            className="px-4 py-1.5 bg-primary text-white text-sm rounded-lg hover:bg-primary/90 transition-colors"
+                            className="px-4 py-1.5 bg-warning text-secondary font-medium text-sm rounded-lg hover:opacity-90 transition-colors"
                           >
                             Save Changes
                           </button>
@@ -297,13 +297,13 @@ export default function ReviewList() {
                         <div className="flex gap-2 pt-2 border-t border-border">
                           <button
                             onClick={() => handleStartEdit(review)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border border-border hover:bg-gray-50 transition-colors text-text-secondary"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border border-warning/50 hover:bg-yellow-50 transition-colors text-warning"
                           >
                             <Eye size={14} /> Edit
                           </button>
                           <button
                             onClick={() => setDeleteConfirm(review.id)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border border-red-200 hover:bg-red-50 transition-colors text-red-600"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg border border-danger/50 hover:bg-red-50 transition-colors text-danger"
                           >
                             <Trash2 size={14} /> Delete
                           </button>
