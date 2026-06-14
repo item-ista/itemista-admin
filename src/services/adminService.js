@@ -258,6 +258,55 @@ export async function updateOrderStatus(id, status) {
   return data
 }
 
+// ─── Safepay Payments ──────────────────────────────────────────────
+
+const SAFEPAY_METHODS = ['Safepay', 'Debit Card', 'Debit Card (Safepay)']
+
+export async function getSafepayOrders({ page = 1, limit = ITEMS_PER_PAGE, status = '', search = '' } = {}) {
+  let query = supabase
+    .from('orders')
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .in('payment_method', SAFEPAY_METHODS)
+
+  if (status) query = query.eq('payment_status', status)
+  if (search) query = query.or(`id.eq.${search},customer_email.ilike.%${search}%`)
+
+  const from = (page - 1) * limit
+  const to = from + limit - 1
+  query = query.range(from, to)
+
+  const { data, error, count } = await query
+  if (error) throw error
+  return { orders: data, total: count, page, totalPages: Math.ceil(count / limit) }
+}
+
+export async function getSafepayStats() {
+  const baseQuery = () => supabase
+    .from('orders')
+    .select('id', { count: 'exact', head: true })
+    .in('payment_method', SAFEPAY_METHODS)
+
+  const [totalRes, paidRes, pendingRes, failedRes] = await Promise.all([
+    baseQuery(),
+    baseQuery().eq('payment_status', 'completed'),
+    baseQuery().eq('payment_status', 'pending'),
+    baseQuery().eq('payment_status', 'failed'),
+  ])
+
+  if (totalRes.error) throw totalRes.error
+  if (paidRes.error) throw paidRes.error
+  if (pendingRes.error) throw pendingRes.error
+  if (failedRes.error) throw failedRes.error
+
+  return {
+    total: totalRes.count || 0,
+    paid: paidRes.count || 0,
+    pending: pendingRes.count || 0,
+    failed: failedRes.count || 0,
+  }
+}
+
 // ─── Reviews ─────────────────────────────────────────────
 
 export async function getReviews({ page = 1, limit = ITEMS_PER_PAGE, search = '', rating = '', sort = 'newest' } = {}) {
@@ -311,4 +360,126 @@ export async function getProductNameById(id) {
   const { data, error } = await supabase.from('products').select('name, slug, image').eq('id', id).single()
   if (error) return null
   return data
+}
+
+// ─── Homepage Slider / Banners ─────────────────────────
+
+export async function getHomepageBanners() {
+  const { data, error } = await supabase
+    .from('homepage_banners')
+    .select('*')
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
+
+  if (error) throw error
+  return data || []
+}
+
+export async function createHomepageBanner(payload) {
+  const { data, error } = await supabase
+    .from('homepage_banners')
+    .insert([payload])
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function updateHomepageBanner(id, updates) {
+  const { data, error } = await supabase
+    .from('homepage_banners')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function deleteHomepageBanner(id) {
+  const { error } = await supabase.from('homepage_banners').delete().eq('id', id)
+  if (error) throw error
+}
+
+export async function reorderHomepageBanners(bannerIds = []) {
+  const userRes = await supabase.auth.getUser()
+  const userId = userRes.data.user?.id || null
+
+  const results = await Promise.all(
+    bannerIds.map((id, index) =>
+      supabase
+        .from('homepage_banners')
+        .update({ sort_order: index, updated_by: userId })
+        .eq('id', id)
+    )
+  )
+
+  const failed = results.find((res) => res.error)
+  if (failed?.error) throw failed.error
+}
+
+export async function uploadHomepageBannerImage(file) {
+  const fileExt = file.name.split('.').pop()
+  const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`
+  const filePath = `homepage/${fileName}`
+
+  const { error: uploadError } = await supabase.storage
+    .from('homepage-banners')
+    .upload(filePath, file, { cacheControl: '3600', upsert: false })
+
+  if (uploadError) throw uploadError
+
+  const { data } = supabase.storage.from('homepage-banners').getPublicUrl(filePath)
+  return data.publicUrl
+}
+
+export async function deleteHomepageBannerImage(url) {
+  const path = url.split('/homepage-banners/')[1]
+  if (!path) return
+  const { error } = await supabase.storage.from('homepage-banners').remove([path])
+  if (error) throw error
+}
+
+export async function getHomepageSliderSettings() {
+  const { data, error } = await supabase
+    .from('homepage_slider_settings')
+    .select('id, autoplay_delay_ms')
+    .eq('id', 1)
+    .single()
+
+  if (error && error.code !== 'PGRST116') throw error
+  return data || { id: 1, autoplay_delay_ms: 2000 }
+}
+
+export async function updateHomepageSliderSettings(autoplayDelayMs) {
+  const userRes = await supabase.auth.getUser()
+  const userId = userRes.data.user?.id || null
+
+  const { data: updatedData, error: updateError } = await supabase
+    .from('homepage_slider_settings')
+    .update({
+      autoplay_delay_ms: autoplayDelayMs,
+      updated_by: userId,
+    })
+    .eq('id', 1)
+    .select()
+    .maybeSingle()
+
+  if (updateError) throw updateError
+  if (updatedData) return updatedData
+
+  const { data: insertedData, error: insertError } = await supabase
+    .from('homepage_slider_settings')
+    .insert({
+      id: 1,
+      autoplay_delay_ms: autoplayDelayMs,
+      updated_by: userId,
+    })
+    .select()
+    .single()
+
+  if (insertError) throw insertError
+  return insertedData
 }

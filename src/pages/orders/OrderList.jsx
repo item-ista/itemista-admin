@@ -101,6 +101,7 @@ export default function OrderList() {
                   <th className="text-left py-3 px-4 font-medium text-text-muted">Order ID</th>
                   <th className="text-left py-3 px-4 font-medium text-text-muted">Customer</th>
                   <th className="text-left py-3 px-4 font-medium text-text-muted">Total</th>
+                  <th className="text-left py-3 px-4 font-medium text-text-muted">Payment</th>
                   <th className="text-left py-3 px-4 font-medium text-text-muted">Status</th>
                   <th className="text-left py-3 px-4 font-medium text-text-muted">Date</th>
                   <th className="text-right py-3 px-4 font-medium text-text-muted">Actions</th>
@@ -114,6 +115,9 @@ export default function OrderList() {
                       {order.customer_email || order.customer_name || '—'}
                     </td>
                     <td className="py-3 px-4 font-semibold">{formatPrice(order.total)}</td>
+                    <td className="py-3 px-4 text-text-secondary text-xs">
+                      {order.payment_method || '—'}
+                    </td>
                     <td className="py-3 px-4">
                       <select
                         value={order.status}

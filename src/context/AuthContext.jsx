@@ -10,31 +10,31 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
   const [isAdmin, setIsAdmin] = useState(false)
 
+  const hydrateUserFromSession = (activeSession) => {
+    if (activeSession?.user) {
+      const userData = activeSession.user
+      const role = userData.user_metadata?.role || userData.app_metadata?.role || USER_ROLES.USER
+      setUser({ ...userData, role })
+      setIsAdmin(role === USER_ROLES.ADMIN)
+      return
+    }
+
+    setUser(null)
+    setIsAdmin(false)
+  }
+
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
-      if (session?.user) {
-        const userData = session.user
-        const role = userData.user_metadata?.role || userData.app_metadata?.role || USER_ROLES.USER
-        setUser({ ...userData, role })
-        setIsAdmin(role === USER_ROLES.ADMIN)
-      }
+      hydrateUserFromSession(session)
       setLoading(false)
     })
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
-      if (session?.user) {
-        const userData = session.user
-        const role = userData.user_metadata?.role || userData.app_metadata?.role || USER_ROLES.USER
-        setUser({ ...userData, role })
-        setIsAdmin(role === USER_ROLES.ADMIN)
-      } else {
-        setUser(null)
-        setIsAdmin(false)
-      }
+      hydrateUserFromSession(session)
       setLoading(false)
     })
 
@@ -62,6 +62,17 @@ export function AuthProvider({ children }) {
     setIsAdmin(false)
   }
 
+  const refreshUser = async () => {
+    const { data, error } = await supabase.auth.getUser()
+    if (error) throw error
+
+    if (data?.user) {
+      const role = data.user.user_metadata?.role || data.user.app_metadata?.role || USER_ROLES.USER
+      setUser({ ...data.user, role })
+      setIsAdmin(role === USER_ROLES.ADMIN)
+    }
+  }
+
   const value = {
     user,
     session,
@@ -70,6 +81,7 @@ export function AuthProvider({ children }) {
     isAuthenticated: !!session,
     login,
     logout,
+    refreshUser,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

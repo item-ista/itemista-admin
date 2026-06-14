@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { useOrderNotifications } from '../../context/OrderNotificationContext'
 import { useNavigate } from 'react-router-dom'
-import { LogOut, Bell, Menu, Check } from 'lucide-react'
+import { LogOut, Bell, Menu, Check, ChevronDown, UserCog } from 'lucide-react'
 import { getInitials } from '../../utils/helpers'
 import { toast } from 'react-toastify'
 
@@ -25,11 +25,13 @@ export default function Header({ collapsed, onMenuToggle }) {
   const { user, logout } = useAuth()
   const { notifications, unreadCount, markAllRead, markAsRead } = useOrderNotifications()
   const navigate = useNavigate()
-  const [showDropdown, setShowDropdown] = useState(false)
+  const [showNotifDropdown, setShowNotifDropdown] = useState(false)
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false)
   const [bellRinging, setBellRinging] = useState(false)
   const prevUnreadCount = useRef(0)
   const hasRungOnMount = useRef(false)
-  const dropdownRef = useRef(null)
+  const notifDropdownRef = useRef(null)
+  const profileDropdownRef = useRef(null)
 
   // Ring bell when a new unread notification arrives (live)
   useEffect(() => {
@@ -55,8 +57,11 @@ export default function Header({ collapsed, onMenuToggle }) {
   // Close dropdown on click outside
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setShowDropdown(false)
+      if (notifDropdownRef.current && !notifDropdownRef.current.contains(e.target)) {
+        setShowNotifDropdown(false)
+      }
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(e.target)) {
+        setShowProfileDropdown(false)
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -75,8 +80,13 @@ export default function Header({ collapsed, onMenuToggle }) {
 
   const handleNotifClick = (notif) => {
     markAsRead(notif.id)
-    setShowDropdown(false)
+    setShowNotifDropdown(false)
     navigate(`/orders/${notif.id}`)
+  }
+
+  const handleManageAccount = () => {
+    setShowProfileDropdown(false)
+    navigate('/account/manage')
   }
 
   const displayName =
@@ -84,6 +94,8 @@ export default function Header({ collapsed, onMenuToggle }) {
     `${user?.user_metadata?.first_name || ''} ${user?.user_metadata?.last_name || ''}`.trim() ||
     user?.email ||
     'Admin'
+
+  const avatarUrl = user?.user_metadata?.avatar_url
 
   return (
     <header
@@ -104,9 +116,12 @@ export default function Header({ collapsed, onMenuToggle }) {
       {/* Right — User info & actions */}
       <div className="flex items-center gap-4">
         {/* Notification Bell */}
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative" ref={notifDropdownRef}>
           <button
-            onClick={() => setShowDropdown(!showDropdown)}
+            onClick={() => {
+              setShowNotifDropdown((prev) => !prev)
+              setShowProfileDropdown(false)
+            }}
             className="relative p-2 rounded-lg hover:bg-gray-100 text-text-secondary transition-colors"
           >
             <Bell size={20} className={bellRinging ? 'bell-ring' : ''} />
@@ -123,7 +138,7 @@ export default function Header({ collapsed, onMenuToggle }) {
           </button>
 
           {/* Dropdown */}
-          {showDropdown && (
+          {showNotifDropdown && (
             <div className="absolute right-0 top-full mt-2 w-[380px] bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50">
               {/* Dropdown Header */}
               <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/80">
@@ -202,7 +217,10 @@ export default function Header({ collapsed, onMenuToggle }) {
               {notifications.length > 0 && (
                 <div className="border-t border-gray-100 bg-gray-50/80 px-4 py-2.5">
                   <button
-                    onClick={() => { setShowDropdown(false); navigate('/orders') }}
+                    onClick={() => {
+                      setShowNotifDropdown(false)
+                      navigate('/orders')
+                    }}
                     className="w-full text-center text-xs font-semibold text-primary hover:underline"
                   >
                     View All Orders
@@ -213,25 +231,56 @@ export default function Header({ collapsed, onMenuToggle }) {
           )}
         </div>
 
-        {/* User avatar & name */}
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
-            {getInitials(displayName)}
-          </div>
-          <div className="hidden sm:block">
-            <p className="text-sm font-medium text-text-primary leading-tight">{displayName}</p>
-            <p className="text-xs text-text-muted leading-tight">Administrator</p>
-          </div>
-        </div>
+        {/* User profile */}
+        <div className="relative" ref={profileDropdownRef}>
+          <button
+            onClick={() => {
+              setShowProfileDropdown((prev) => !prev)
+              setShowNotifDropdown(false)
+            }}
+            className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-gray-100 transition-colors"
+          >
+            <div
+              className="rounded-full bg-white text-text-secondary flex items-center justify-center text-xs font-bold overflow-hidden border border-border shrink-0"
+              style={{ width: '32px', height: '32px', minWidth: '32px', minHeight: '32px' }}
+            >
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={displayName}
+                  className="rounded-full object-contain bg-white"
+                  style={{ width: '32px', height: '32px', minWidth: '32px', minHeight: '32px' }}
+                />
+              ) : (
+                getInitials(displayName)
+              )}
+            </div>
+            <div className="hidden sm:block text-left">
+              <p className="text-sm font-medium text-text-primary leading-tight">{displayName}</p>
+              <p className="text-xs text-text-muted leading-tight">Administrator</p>
+            </div>
+            <ChevronDown size={16} className="text-text-muted" />
+          </button>
 
-        {/* Logout */}
-        <button
-          onClick={handleLogout}
-          className="p-2 rounded-lg hover:bg-red-50 text-text-secondary hover:text-danger transition-colors"
-          title="Logout"
-        >
-          <LogOut size={18} />
-        </button>
+          {showProfileDropdown && (
+            <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50">
+              <button
+                onClick={handleManageAccount}
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-text-primary hover:bg-gray-50 transition-colors"
+              >
+                <UserCog size={16} className="text-primary" />
+                Manage Account
+              </button>
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-danger hover:bg-red-50 transition-colors border-t border-gray-100"
+              >
+                <LogOut size={16} />
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   )

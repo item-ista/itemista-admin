@@ -47,6 +47,8 @@ export default function OrderDetail() {
   if (loading) return <LoadingScreen />
   if (!order) return null
 
+  const paymentDetails = order.payment_details || {}
+
   return (
     <div>
       {/* Header */}
@@ -83,7 +85,7 @@ export default function OrderDetail() {
               <div className="space-y-3">
                 {order.items.map((item, i) => (
                   <div key={i} className="flex items-center gap-3 py-2 border-b border-border/50 last:border-0">
-                    <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                    <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden shrink-0">
                       {item.image && <img src={item.image} alt="" className="w-full h-full object-cover" />}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -156,6 +158,29 @@ export default function OrderDetail() {
                 <span className="text-text-muted">Status</span>
                 <StatusBadge status={order.payment_status || 'pending'} />
               </div>
+
+              {paymentDetails.bank_name && (
+                <div className="flex justify-between gap-3">
+                  <span className="text-text-muted">Bank</span>
+                  <span className="text-text-primary font-medium text-right">{paymentDetails.bank_name}</span>
+                </div>
+              )}
+
+              {paymentDetails.card_brand && (
+                <div className="flex justify-between gap-3">
+                  <span className="text-text-muted">Card</span>
+                  <span className="text-text-primary font-medium text-right">
+                    {paymentDetails.card_brand} •••• {paymentDetails.card_last4 || '----'}
+                  </span>
+                </div>
+              )}
+
+              {paymentDetails.payer_name && (
+                <div className="flex justify-between gap-3">
+                  <span className="text-text-muted">Payer</span>
+                  <span className="text-text-primary font-medium text-right">{paymentDetails.payer_name}</span>
+                </div>
+              )}
             </div>
           </div>
 

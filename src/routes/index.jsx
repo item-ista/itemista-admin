@@ -14,9 +14,12 @@ import AddProduct from '../pages/products/AddProduct'
 import EditProduct from '../pages/products/EditProduct'
 import OrderList from '../pages/orders/OrderList'
 import OrderDetail from '../pages/orders/OrderDetail'
+import SafepayPayments from '../pages/payments/SafepayPayments'
 import ReviewList from '../pages/reviews/ReviewList'
 import UserList from '../pages/users/UserList'
+import BannerManager from '../pages/banners/BannerManager'
 import Settings from '../pages/Settings'
+import ManageAccount from '../pages/ManageAccount'
 import NotFound from '../pages/NotFound'
 
 const router = createBrowserRouter([
@@ -65,6 +68,10 @@ const router = createBrowserRouter([
             path: '/orders/:id',
             element: <OrderDetail />,
           },
+          {
+            path: '/payments/safepay',
+            element: <SafepayPayments />,
+          },
           // Reviews
           {
             path: '/reviews',
@@ -75,10 +82,18 @@ const router = createBrowserRouter([
             path: '/users',
             element: <UserList />,
           },
+          {
+            path: '/banners',
+            element: <BannerManager />,
+          },
           // Settings
           {
             path: '/settings',
             element: <Settings />,
+          },
+          {
+            path: '/account/manage',
+            element: <ManageAccount />,
           },
         ],
       },

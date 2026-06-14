@@ -1,9 +1,11 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import {
   LayoutDashboard,
+  Images,
   Package,
   Users,
   ShoppingCart,
+  CreditCard,
   Settings,
   ChevronLeft,
   ChevronRight,
@@ -15,8 +17,10 @@ const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/products', icon: Package, label: 'Products' },
   { to: '/orders', icon: ShoppingCart, label: 'Orders', showBadge: true },
+  { to: '/payments/safepay', icon: CreditCard, label: 'Safepay' },
   { to: '/reviews', icon: Star, label: 'Reviews' },
   { to: '/users', icon: Users, label: 'Users' },
+  { to: '/banners', icon: Images, label: 'Banners' },
   { to: '/settings', icon: Settings, label: 'Settings' },
 ]
 
